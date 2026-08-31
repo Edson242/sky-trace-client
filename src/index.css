@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-tactical-neutral: #020617;
+  --color-tactical-secondary: #0F172A;
+  --color-tactical-primary: #22C55E;
+  --color-tactical-tertiary: #F59E0B;
+}
+
+body {
+  background-color: #020617; /* Neutral background from design system */
+}
+
+.plane-marker-transparent {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Feedback de hover ao passar o mouse sobre um avião no mapa (clicável).
+   O scale fica no wrapper (não na svg) para não brigar com o transform de
+   rotação do rumo, que é aplicado inline na própria svg. */
+.plane-icon-wrapper {
+  transition: transform 0.15s ease-out;
+}
+.plane-marker-transparent:hover .plane-icon-wrapper {
+  transform: scale(1.35);
+}
+
+.leaflet-container img {
+  max-width: none !important;
+}
+
+/* Esconde a barra de rolagem da sidebar mas mantém a funcionalidade */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+/* Estilo tático para o indicativo (callsign) no mapa */
+.tactical-callsign {
+  background-color: rgba(17, 24, 39, 0.75) !important; /* bg-gray-900 com opacidade */
+  border: 1px solid #374151 !important; /* border-gray-700 */
+  color: #D1D5DB !important; /* text-gray-300 */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.70rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  box-shadow: none !important;
+  border-radius: 4px;
+}
+
+/* Esconde a seta direcional nativa do tooltip */
+.tactical-callsign::before {
+  display: none !important;
+}
+
+/* Efeito de varredura de radar sobre o mapa: uma linha em tons de verde que
+   gira continuamente. Fica acima de tudo (inclusive marcadores) para simular
+   o "flash" de um radar real ao passar sobre um alvo, mas com opacidade baixa
+   e pointer-events desativado para não atrapalhar a interação com o mapa. */
+.radar-sweep-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.radar-sweep-overlay::before {
+  content: '';
+  position: absolute;
+  inset: -75%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 197, 94, 0.22) 0deg,
+    rgba(34, 197, 94, 0.08) 10deg,
+    rgba(34, 197, 94, 0) 35deg,
+    rgba(34, 197, 94, 0) 360deg
+  );
+  animation: radar-sweep-rotate 5s linear infinite;
+}
+
+@keyframes radar-sweep-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Pisca em vermelho o ícone de aeronaves em estado crítico (emergência/tempestade) */
+.plane-blink-critical {
+  animation: plane-blink-red 0.9s ease-in-out infinite;
+}
+
+@keyframes plane-blink-red {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.9));
+  }
+  50% {
+    opacity: 0.35;
+    filter: drop-shadow(0 0 9px rgba(239, 68, 68, 1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep-overlay::before,
+  .plane-blink-critical {
+    animation: none;
+  }
+}
