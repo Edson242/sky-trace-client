@@ -10,7 +10,6 @@ export interface Flight {
   heading: number;
   threatLevel: ThreatLevel;
   category: number;
-  // Novos dados do Socket:
   windSpeed?: number;
   windGust?: number;
   precipitation?: number;

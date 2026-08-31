@@ -3,7 +3,6 @@ import { io } from 'socket.io-client';
 import { useRadarStore } from '../store/useRadarStore';
 import type { Alert, Flight, SystemHealth } from '../types';
 
-// 1. Importa o arquivo de áudio da pasta assets
 import alarmSound from '../assets/alarm.mp3';
 
 interface RadarUpdatePayload {
@@ -11,15 +10,11 @@ interface RadarUpdatePayload {
   systemHealth: SystemHealth;
 }
 
-export const socket = io('http://localhost:3000');
+export const socket = io(import.meta.env.VITE_URL_API);
 
-// WAV silencioso de 1 amostra, usado só para "destravar" o autoplay de áudio
-// no navegador a partir de um gesto real do usuário (ver useAudioUnlock).
 const SILENT_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 
 function playAlarmSound() {
-  // Sem o desbloqueio (ver useAudioUnlock), o navegador rejeitaria a chamada
-  // de qualquer forma; evitamos a tentativa fadada e o warning correspondente.
   if (!useRadarStore.getState().audioUnlocked) return;
 
   const audio = new Audio(alarmSound);
@@ -28,11 +23,6 @@ function playAlarmSound() {
   });
 }
 
-// Navegadores bloqueiam audio.play() até o usuário interagir com a página ao
-// menos uma vez. Sem isso, o alarme de emergência simplesmente falhava em
-// silêncio (NotAllowedError) e ninguém percebia. Aqui, o primeiro clique/tecla
-// toca um áudio inaudível só para conquistar essa permissão; depois disso os
-// alarmes reais tocam normalmente.
 function useAudioUnlock() {
   const setAudioUnlocked = useRadarStore((state) => state.setAudioUnlocked);
 
@@ -47,9 +37,6 @@ function useAudioUnlock() {
           window.removeEventListener('pointerdown', unlock);
           window.removeEventListener('keydown', unlock);
 
-          // Se algum voo já estava em CRITICAL antes deste desbloqueio (ex:
-          // emergência em curso ao carregar a página), o alarme daquela
-          // transição foi perdido por falta de permissão — dispara agora.
           const alreadyCritical = useRadarStore
             .getState()
             .flights.some((flight) => flight.threatLevel === 'CRITICAL');
@@ -58,7 +45,6 @@ function useAudioUnlock() {
           }
         })
         .catch(() => {
-          // Ainda bloqueado; o listener continua ativo para tentar de novo.
         });
     };
 
@@ -77,14 +63,9 @@ export function useRadarSocket() {
 
   useAudioUnlock();
 
-  // Guarda quais voos já estavam em CRITICAL na última atualização, para tocar
-  // o alarme apenas quando um voo ENTRA em emergência/tempestade (borda de
-  // subida), e não a cada tick de socket enquanto ele permanece crítico.
   const criticalFlightIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // Estado real da conexão: o texto "Conectado" na topbar antes era fixo
-    // no JSX e aparecia mesmo sem nenhum backend rodando.
     setSocketConnected(socket.connected);
     socket.on('connect', () => setSocketConnected(true));
     socket.on('disconnect', () => setSocketConnected(false));

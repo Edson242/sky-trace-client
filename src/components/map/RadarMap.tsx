@@ -3,8 +3,6 @@ import L from 'leaflet';
 import { useRadarStore } from '../../store/useRadarStore';
 import type { ThreatLevel } from '../../types';
 
-// Cache de ícones: evita recriar a divIcon (e o setIcon do Leaflet) a cada
-// atualização de socket quando o rumo/estado da aeronave não mudou de fato.
 const iconCache = new Map<string, L.DivIcon>();
 
 const getPlaneIcon = (heading: number, threatLevel: ThreatLevel) => {
@@ -16,8 +14,8 @@ const getPlaneIcon = (heading: number, threatLevel: ThreatLevel) => {
 
   const color =
     threatLevel === 'CRITICAL' ? '#EF4444' :
-    threatLevel === 'WARNING' ? '#F59E0B' :
-    '#3B82F6';
+      threatLevel === 'WARNING' ? '#F59E0B' :
+        '#3B82F6';
 
   const blinkClass = threatLevel === 'CRITICAL' ? 'plane-blink-critical' : '';
 
@@ -70,7 +68,6 @@ export default function RadarMap() {
               click: () => selectFlight(flight.id),
             }}
           >
-            {/* Tooltip permanente posicionado logo acima do eixo do avião */}
             <Tooltip
               direction="top"
               offset={[0, -12]}
@@ -84,7 +81,6 @@ export default function RadarMap() {
         ))}
       </MapContainer>
 
-      {/* Efeito de varredura de radar: puramente decorativo, não intercepta cliques */}
       <div className="radar-sweep-overlay" aria-hidden="true" />
     </div>
   );

@@ -4,14 +4,8 @@ import { socket } from '../../hooks/useRadarSocket';
 
 export default function RiskModal() {
   const { selectedFlightId, flights, selectFlight } = useRadarStore();
-  // Guarda o horário do envio (calculado uma única vez, no clique) em vez de
-  // recalcular `new Date()` a cada render — senão a hora exibida ficava
-  // mudando sozinha a cada atualização de socket enquanto o modal está aberto.
   const [deviationSentAt, setDeviationSentAt] = useState<string | null>(null);
   const deviationSent = deviationSentAt !== null;
-
-  // Reseta o aviso de confirmação sempre que um voo diferente é aberto
-  // (ajuste de estado durante a renderização, sem passar por um efeito)
   const [trackedFlightId, setTrackedFlightId] = useState(selectedFlightId);
   if (selectedFlightId !== trackedFlightId) {
     setTrackedFlightId(selectedFlightId);
@@ -27,28 +21,26 @@ export default function RiskModal() {
 
   const isCritical = flight.threatLevel === 'CRITICAL';
   const headerColor = isCritical ? 'text-red-500' : 'text-green-500';
-  
+
   const altitudeFeet = Math.floor(flight.altitude * 3.28084);
   const velocityKnots = Math.floor(flight.velocity * 1.94384);
 
-  // Fallbacks de segurança para caso o dado ambiental falhe no payload
   const wind = flight.windSpeed ?? 0;
   const gusts = flight.windGust ?? 0;
   const rain = flight.precipitation ?? 0;
   const vis = flight.visibility ?? 10;
 
-  // Lógica dinâmica para o medidor de turbulência baseada no ThreatLevel
-  const turbulenceText = 
-    flight.threatLevel === 'CRITICAL' ? 'PERIGOSO' : 
-    flight.threatLevel === 'WARNING' ? 'MODERADO' : 'SEGURO';
-  const turbulenceColor = 
-    flight.threatLevel === 'CRITICAL' ? 'text-red-500' : 
-    flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
+  const turbulenceText =
+    flight.threatLevel === 'CRITICAL' ? 'PERIGOSO' :
+      flight.threatLevel === 'WARNING' ? 'MODERADO' : 'SEGURO';
+  const turbulenceColor =
+    flight.threatLevel === 'CRITICAL' ? 'text-red-500' :
+      flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
 
   return (
     <div className="absolute inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-[#0F172A] border border-slate-700/50 rounded-xl shadow-2xl w-full max-w-3xl p-8 font-sans">
-        
+
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="flex items-center gap-4 mb-1">
@@ -92,14 +84,13 @@ export default function RiskModal() {
           <div className="bg-[#1E293B] rounded-lg p-5 border border-slate-700/50">
             <span className="text-slate-400 text-[10px] font-bold tracking-widest uppercase block mb-1">Proa</span>
             <span className="text-3xl font-bold text-white font-mono flex items-center gap-2">
-              <span style={{ transform: `rotate(${flight.heading}deg)` }}>▽</span> 
+              <span style={{ transform: `rotate(${flight.heading}deg)` }}>▽</span>
               {Math.floor(flight.heading)}°
-            </span> 
+            </span>
           </div>
 
           <div className="bg-[#1E293B] rounded-lg p-5 border border-slate-700/50">
             <span className="text-slate-400 text-[10px] font-bold tracking-widest uppercase block mb-1">ETA Próximo Waypoint</span>
-            {/* Mantido como UI fixa pois exige cálculo de rota geoespacial no back-end */}
             <span className="text-3xl font-bold text-white font-mono">14:22</span> <span className="text-slate-500 text-sm">UTC</span>
           </div>
         </div>
@@ -108,7 +99,7 @@ export default function RiskModal() {
           <h3 className="text-white font-bold mb-4 flex items-center gap-2">
             <span className="text-amber-500">🛰️</span> Análise Ambiental Ao Vivo
           </h3>
-          
+
           <div className="grid grid-cols-2 gap-8 w-2/3">
             <div>
               <span className="text-slate-400 text-[10px] font-bold tracking-widest uppercase block mb-1">Velocidade do Vento</span>
@@ -131,10 +122,9 @@ export default function RiskModal() {
           <div className="absolute right-6 bottom-6 bg-[#0B1120] p-4 rounded-lg border border-slate-800 text-center w-64">
             <span className="text-slate-400 text-[10px] font-bold tracking-widest uppercase block mb-4">Índice de Turbulência</span>
             <div className="h-1 w-full bg-gradient-to-r from-green-500 via-amber-500 to-red-500 rounded-full mb-2 relative">
-              <div className={`absolute top-[-6px] w-3 h-3 bg-white rounded-full shadow-[0_0_10px_white] transition-all duration-700 ${
-                flight.threatLevel === 'CRITICAL' ? 'right-2' : 
-                flight.threatLevel === 'WARNING' ? 'right-[50%]' : 'left-2'
-              }`}></div>
+              <div className={`absolute top-[-6px] w-3 h-3 bg-white rounded-full shadow-[0_0_10px_white] transition-all duration-700 ${flight.threatLevel === 'CRITICAL' ? 'right-2' :
+                  flight.threatLevel === 'WARNING' ? 'right-[50%]' : 'left-2'
+                }`}></div>
             </div>
             <span className={`font-black tracking-widest ${turbulenceColor}`}>{turbulenceText}</span>
           </div>
@@ -165,11 +155,10 @@ export default function RiskModal() {
               socket.emit('issue_route_deviation', { flightId: flight.id, reason: 'SEVERE_WEATHER' });
               setDeviationSentAt(new Date().toLocaleTimeString('pt-BR'));
             }}
-            className={`px-6 py-3 rounded text-sm font-bold transition-colors ${
-              deviationSent ? 'bg-green-500/15 text-green-400 border border-green-500/40 cursor-default' :
-              isCritical ? 'bg-red-400/90 text-red-950 hover:bg-red-400 shadow-[0_0_15px_rgba(248,113,113,0.3)] cursor-pointer'
-                         : 'bg-slate-700 text-slate-400 cursor-not-allowed'
-            }`}
+            className={`px-6 py-3 rounded text-sm font-bold transition-colors ${deviationSent ? 'bg-green-500/15 text-green-400 border border-green-500/40 cursor-default' :
+                isCritical ? 'bg-red-400/90 text-red-950 hover:bg-red-400 shadow-[0_0_15px_rgba(248,113,113,0.3)] cursor-pointer'
+                  : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+              }`}
             disabled={!isCritical || deviationSent}
           >
             {deviationSent ? '✅ Desvio Enviado ao Cockpit' : '📢 Emitir Desvio de Rota para o Cockpit'}

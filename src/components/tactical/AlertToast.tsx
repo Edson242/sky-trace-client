@@ -8,9 +8,9 @@ function ToastItem({ alert, onDismiss }: { alert: Alert; onDismiss: (id: string)
     return () => clearTimeout(timer);
   }, [alert.id, onDismiss]);
 
-  const bgColor = alert.level === 'CRITICAL' 
-  ? 'bg-red-950/90 border border-red-500 text-red-100' 
-  : 'bg-[#1E293B]/90 border border-amber-500 text-amber-100';
+  const bgColor = alert.level === 'CRITICAL'
+    ? 'bg-red-950/90 border border-red-500 text-red-100'
+    : 'bg-[#1E293B]/90 border border-amber-500 text-amber-100';
   const glow = alert.level === 'CRITICAL' ? 'shadow-[0_0_15px_rgba(239,68,68,0.5)]' : '';
 
   return (
@@ -31,8 +31,7 @@ function ToastItem({ alert, onDismiss }: { alert: Alert; onDismiss: (id: string)
 
 export default function AlertToast() {
   const alerts = useRadarStore((state) => state.activeAlerts);
-  
-  // Guardamos apenas um Set de IDs dos alertas que o usuário (ou o tempo) fechou
+
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   const handleDismiss = (id: string) => {
@@ -43,7 +42,6 @@ export default function AlertToast() {
     });
   };
 
-  // O React calcula isso instantaneamente no render, sem useEffect
   const visibleAlerts = alerts
     .filter((alert) => !dismissedIds.has(alert.id))
     .slice(-5);
