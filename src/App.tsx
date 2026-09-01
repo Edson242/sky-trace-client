@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useRadarSocket } from './hooks/useRadarSocket';
+import { useRadarSocket, socket } from './hooks/useRadarSocket';
 import { useRadarStore } from './store/useRadarStore';
 import RadarMap from './components/map/RadarMap';
 import FlightSidebar from './components/sidebar/FlightSidebar';
@@ -21,8 +21,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className="h-screen w-screen p-4 flex flex-col font-sans overflow-hidden">
-      <div className="relative flex-1 rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl">
+    <div className="h-screen w-screen flex flex-col font-sans overflow-hidden bg-[#020617]">
+      <div className="relative flex-1 overflow-hidden shadow-sm">
         <div className="absolute inset-0 z-0">
           <RadarMap />
         </div>
@@ -33,22 +33,24 @@ export default function App() {
 
           <div className="flex gap-4 items-center pointer-events-auto">
             {!audioUnlocked && (
-              <div className="flex items-center gap-2 bg-amber-950/80 backdrop-blur border border-amber-600 rounded-full px-4 py-1.5 text-xs font-mono text-amber-300">
+              <div className="flex items-center gap-2 bg-amber-950/80 backdrop-blur border border-amber-600 px-4 py-1.5 text-xs font-mono text-amber-300 shadow-sm">
                 🔈 Clique na tela para ativar o alarme sonoro
               </div>
             )}
-            <div className={`flex items-center gap-2 bg-slate-900/80 backdrop-blur border rounded-full px-4 py-1.5 text-xs font-mono ${socketConnected ? 'border-slate-700 text-green-400' : 'border-red-700 text-red-400'
+            <div 
+              onClick={() => socketConnected ? socket.disconnect() : socket.connect()}
+              className={`cursor-pointer hover:bg-slate-800/80 transition-colors flex items-center gap-2 bg-slate-900/80 backdrop-blur border px-4 py-1.5 text-xs font-mono shadow-sm ${socketConnected ? 'border-slate-700 text-green-400' : 'border-red-700 text-red-400'
               }`}>
-              <span className={`w-2 h-2 rounded-full ${socketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+              <span className={`w-2 h-2 ${socketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
               WebSocket: {socketConnected ? 'Conectado' : 'Desconectado'}
             </div>
-            <div className="bg-slate-900/80 backdrop-blur border border-slate-700 rounded-md px-4 py-1.5 text-sm font-mono text-white">
+            <div className="bg-slate-900/80 backdrop-blur border border-slate-700 px-4 py-1.5 text-sm font-mono text-white shadow-sm">
               {time} BRT
             </div>
           </div>
         </div>
 
-        <div className="absolute top-20 right-6 bottom-6 w-96 z-10 pointer-events-none">
+        <div className="absolute top-20 right-6 bottom-6 w-96 z-[1001] pointer-events-none">
           <FlightSidebar />
         </div>
 

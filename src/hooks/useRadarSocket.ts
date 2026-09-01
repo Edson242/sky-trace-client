@@ -17,10 +17,15 @@ const SILENT_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAE
 function playAlarmSound() {
   if (!useRadarStore.getState().audioUnlocked) return;
 
-  const audio = new Audio(alarmSound);
-  audio.play().catch((err) => {
+  const audio1 = new Audio(alarmSound);
+  audio1.play().catch((err) => {
     console.warn('Falha ao tocar o alarme sonoro.', err);
   });
+
+  setTimeout(() => {
+    const audio2 = new Audio(alarmSound);
+    audio2.play().catch(console.warn);
+  }, 800);
 }
 
 function useAudioUnlock() {
@@ -66,6 +71,18 @@ export function useRadarSocket() {
   const criticalFlightIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    const reminderInterval = setInterval(() => {
+      const state = useRadarStore.getState();
+      const hasCritical = state.flights.some((f) => f.threatLevel === 'CRITICAL');
+      if (hasCritical) {
+        playAlarmSound();
+      }
+    }, 120000); // 2 minutes
+
+    return () => clearInterval(reminderInterval);
+  }, []);
+
+  useEffect(() => {
     setSocketConnected(socket.connected);
     socket.on('connect', () => setSocketConnected(true));
     socket.on('disconnect', () => setSocketConnected(false));
@@ -75,14 +92,19 @@ export function useRadarSocket() {
 
       const previousCritical = criticalFlightIdsRef.current;
       const currentCritical = new Set<string>();
+      let hasNewCritical = false;
 
       for (const flight of data.activeFlights) {
         if (flight.threatLevel === 'CRITICAL') {
           currentCritical.add(flight.id);
           if (!previousCritical.has(flight.id)) {
-            playAlarmSound();
+            hasNewCritical = true;
           }
         }
+      }
+
+      if (hasNewCritical) {
+        playAlarmSound();
       }
 
       criticalFlightIdsRef.current = currentCritical;
