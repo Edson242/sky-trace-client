@@ -18,14 +18,15 @@ function playAlarmSound() {
   if (!useRadarStore.getState().audioUnlocked) return;
 
   const audio1 = new Audio(alarmSound);
+  
+  audio1.addEventListener('ended', () => {
+    const audio2 = new Audio(alarmSound);
+    audio2.play().catch(console.warn);
+  });
+
   audio1.play().catch((err) => {
     console.warn('Falha ao tocar o alarme sonoro.', err);
   });
-
-  setTimeout(() => {
-    const audio2 = new Audio(alarmSound);
-    audio2.play().catch(console.warn);
-  }, 800);
 }
 
 function useAudioUnlock() {

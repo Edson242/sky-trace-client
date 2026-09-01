@@ -1,5 +1,13 @@
 export type ThreatLevel = 'SAFE' | 'WARNING' | 'CRITICAL';
 
+export interface EnvironmentData {
+  windSpeed: number;
+  windGust: number;
+  precipitation: number;
+  visibility: number;
+  turbulenceIndex: number | string;
+}
+
 export interface Flight {
   id: string;
   originCountry: string;
@@ -10,10 +18,7 @@ export interface Flight {
   heading: number;
   threatLevel: ThreatLevel;
   category: number;
-  windSpeed?: number;
-  windGust?: number;
-  precipitation?: number;
-  visibility?: number;
+  environment?: EnvironmentData;
 }
 
 export interface SystemHealth {

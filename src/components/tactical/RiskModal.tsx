@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRadarStore } from '../../store/useRadarStore';
 import { socket } from '../../hooks/useRadarSocket';
 import { Plane, AlertTriangle, Satellite, CheckCircle2, Info, Megaphone, X, Navigation } from 'lucide-react';
+import { AirlineLogo } from './AirlineLogo';
 
 export default function RiskModal() {
   const { selectedFlightId, flights, selectFlight } = useRadarStore();
@@ -26,14 +27,18 @@ export default function RiskModal() {
   const altitudeFeet = Math.floor(flight.altitude * 3.28084);
   const velocityKnots = Math.floor(flight.velocity * 1.94384);
 
-  const wind = flight.windSpeed ?? 0;
-  const gusts = flight.windGust ?? 0;
-  const rain = flight.precipitation ?? 0;
-  const vis = flight.visibility ?? 10;
+  const {
+    windSpeed: wind = 0,
+    windGust: gusts = 0,
+    precipitation: rain = 0,
+    visibility: vis = 10,
+    turbulenceIndex
+  } = flight.environment || {};
 
   const turbulenceText =
-    flight.threatLevel === 'CRITICAL' ? 'PERIGOSO' :
-      flight.threatLevel === 'WARNING' ? 'MODERADO' : 'SEGURO';
+    turbulenceIndex ||
+    (flight.threatLevel === 'CRITICAL' ? 'PERIGOSO' :
+      flight.threatLevel === 'WARNING' ? 'MODERADO' : 'SEGURO');
   const turbulenceColor =
     flight.threatLevel === 'CRITICAL' ? 'text-red-500' :
       flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
@@ -45,6 +50,7 @@ export default function RiskModal() {
         <div className="flex justify-between items-start mb-6">
           <div>
             <div className="flex items-center gap-4 mb-1">
+              <AirlineLogo flightId={flight.id} className="w-10 h-10" />
               <h2 className={`text-4xl font-black tracking-tighter ${headerColor}`}>
                 {flight.id}
               </h2>

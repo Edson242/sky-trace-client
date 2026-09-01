@@ -21,7 +21,7 @@ export default function FlightSidebar() {
               <div 
                 key={flight.id}
                 onClick={() => selectFlight(flight.id)}
-                className={`p-4 rounded-lg border cursor-pointer hover:bg-slate-700/50 transition-colors backdrop-blur-md ${statusColor}`}
+                className={`p-4 rounded-none shadow-md border cursor-pointer hover:bg-slate-700/50 transition-colors backdrop-blur-md ${statusColor}`}
               >
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold text-white tracking-wider">{flight.id}</span>
