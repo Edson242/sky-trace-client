@@ -5,7 +5,7 @@ export default function FlightSidebar() {
 
   return (
     <div className="h-full flex flex-col pointer-events-auto">
-      <div className="mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-xl border border-slate-700 shadow-xl">
+      <div className="mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-none border border-slate-700 shadow-xl">
         <h2 className="text-white font-bold text-lg">Voos Ativos</h2>
         <p className="text-slate-400 text-xs font-mono mb-4">Monitoramento do Setor 76</p>
         

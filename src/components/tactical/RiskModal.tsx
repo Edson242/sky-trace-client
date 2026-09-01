@@ -44,7 +44,7 @@ export default function RiskModal() {
       flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
 
   return (
-    <div className="absolute inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-[#0F172A] border border-slate-700/50 shadow-sm w-full max-w-3xl p-8 font-sans">
 
         <div className="flex justify-between items-start mb-6">
