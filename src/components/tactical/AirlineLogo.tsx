@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface AirlineLogoProps {
   flightId: string;
   className?: string;
@@ -7,7 +5,7 @@ interface AirlineLogoProps {
 
 export function AirlineLogo({ flightId, className = '' }: AirlineLogoProps) {
   const prefix = flightId.substring(0, 3).toUpperCase();
-  
+
   let logoContent = null;
   let bgClass = 'bg-slate-700';
 
@@ -42,7 +40,7 @@ export function AirlineLogo({ flightId, className = '' }: AirlineLogoProps) {
   } else {
     bgClass = 'bg-slate-700';
     logoContent = (
-      <span className="text-white font-bold text-xs tracking-wider">{prefix.substring(0,2)}</span>
+      <span className="text-white font-bold text-xs tracking-wider">{prefix.substring(0, 2)}</span>
     );
   }
 
