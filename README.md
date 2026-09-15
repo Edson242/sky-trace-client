@@ -1,75 +1,35 @@
-# React + TypeScript + Vite
+# ✈️ SkyTrace Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O **SkyTrace Client** é a interface tática operacional do ecossistema SkyTrace. Ele transforma um fluxo denso de dados de telemetria em uma estação de controle visual e imersiva. Projetado com foco em UI/UX para cenários de alta pressão, ele permite que operadores monitorem riscos climáticos e tomem decisões instantâneas.
 
-Currently, two official plugins are available:
+## 🌟 Principais Funcionalidades (A Interface Tática)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Radar Dinâmico (Mapa em Tempo Real):** As aeronaves são renderizadas no mapa com ícones que rotacionam de acordo com a proa real do avião. As cores mudam dinamicamente (verde, amarelo, vermelho) refletindo o nível de ameaça atual.
+- **Dashboard de Telemetria Analítica:** Ao selecionar um voo, o operador acessa um painel imersivo contendo:
+  - **Perfil Vertical:** Gráfico mostrando o histórico recente de altitude, destacando áreas onde o voo entrou em estado crítico.
+  - **Impacto Ambiental:** Gráfico cruzado que compara a força da natureza (ventos e precipitação) com a velocidade da aeronave, provando visualmente como o clima afeta o voo.
+- **Sistema de Alertas Sensoriais:** Quando um voo entra em risco severo, o sistema dispara notificações visuais (*Toasts*) e alarmes sonoros automáticos para garantir a atenção imediata do operador.
+- **Comando de Desvio (C2):** O operador tem poder de ação. Através do painel, é possível emitir um comando de "Desvio de Rota", enviando a ordem de volta ao servidor e registrando a ação de forma auditável.
+- **Sidebar de Setor:** Uma visão geral constante que lista todas as aeronaves ativas, categorizando-as por risco e monitorando a saúde da conexão em tempo real.
 
-## React Compiler
+## 🛠️ Tecnologias Utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Base:** React.js com Vite e TypeScript.
+- **Gerenciamento de Estado:** Zustand (otimizado para evitar lentidão durante picos de atualizações em tempo real).
+- **Estilização:** Tailwind CSS (Tema Dark Mode focado em interfaces militares/táticas).
+- **Motores Visuais:** Leaflet com OpenStreetMap (Radar) e Recharts (Gráficos analíticos).
 
-## Expanding the ESLint configuration
+## 🚀 Deploy
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+O deploy em ambiente de produção do **SkyTrace Client** foi realizado na **Vercel**, garantindo entrega rápida de conteúdo (CDN) e integração contínua (CI/CD) simplificada.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 💻 Como rodar localmente
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone o repositório: `git clone https://github.com/Edson242/sky-trace-client`
+2. Instale as dependências: `npm install`
+3. Inicie o ambiente de desenvolvimento: `npm run dev`
+4. Acesse no navegador: `http://localhost:5173`
 
-```
-
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+*(Nota: É necessário clicar ao menos uma vez na tela para que o navegador permita a execução dos alarmes sonoros nativos).*
