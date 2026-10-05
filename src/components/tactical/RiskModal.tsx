@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useRadarStore } from '../../store/useRadarStore';
 import { socket } from '../../hooks/useRadarSocket';
 import { Plane, AlertTriangle, Satellite, CheckCircle2, Info, Megaphone, X, Navigation } from 'lucide-react';
@@ -43,13 +43,11 @@ export default function RiskModal() {
     flight.threatLevel === 'CRITICAL' ? 'text-red-500' :
       flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
 
-  const etaString = useMemo(() => {
-    const hash = flight.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const minutesToAdd = (hash % 45) + 15;
-    const etaDate = new Date();
-    etaDate.setMinutes(etaDate.getMinutes() + minutesToAdd);
-    return etaDate.toLocaleTimeString('pt-BR', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
-  }, [flight.id]);
+  const hash = flight.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const minutesToAdd = (hash % 45) + 15;
+  const etaDate = new Date();
+  etaDate.setMinutes(etaDate.getMinutes() + minutesToAdd);
+  const etaString = etaDate.toLocaleTimeString('pt-BR', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
