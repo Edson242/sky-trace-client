@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRadarStore } from '../../store/useRadarStore';
 import { socket } from '../../hooks/useRadarSocket';
 import { Plane, AlertTriangle, Satellite, CheckCircle2, Info, Megaphone, X, Navigation } from 'lucide-react';
@@ -42,6 +42,14 @@ export default function RiskModal() {
   const turbulenceColor =
     flight.threatLevel === 'CRITICAL' ? 'text-red-500' :
       flight.threatLevel === 'WARNING' ? 'text-amber-500' : 'text-green-500';
+
+  const etaString = useMemo(() => {
+    const hash = flight.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const minutesToAdd = (hash % 45) + 15;
+    const etaDate = new Date();
+    etaDate.setMinutes(etaDate.getMinutes() + minutesToAdd);
+    return etaDate.toLocaleTimeString('pt-BR', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
+  }, [flight.id]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -98,7 +106,7 @@ export default function RiskModal() {
 
           <div className="bg-[#1E293B] p-5 border border-slate-700/50 shadow-sm">
             <span className="text-slate-400 text-[10px] font-bold tracking-widest uppercase block mb-1">ETA Próximo Waypoint</span>
-            <span className="text-3xl font-bold text-white font-mono">14:22</span> <span className="text-slate-500 text-sm">UTC</span>
+            <span className="text-3xl font-bold text-white font-mono">{etaString}</span> <span className="text-slate-500 text-sm">UTC</span>
           </div>
         </div>
 
